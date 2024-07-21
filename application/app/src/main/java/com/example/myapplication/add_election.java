@@ -23,6 +23,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -110,6 +113,12 @@ public class add_election extends AppCompatActivity {
             public void onClick(View v) {
                 submitdata();
             }
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
         });
     }
 
@@ -388,11 +397,11 @@ public class add_election extends AppCompatActivity {
 
                 for (Map.Entry<String, String> entry : secretaryhash.entrySet()) {
                     secretaryfile.put(entry.getKey(),entry.getValue());
-                    resultsecretary.put(entry.getKey(),entry.getValue());
+                    resultsecretary.put(entry.getKey(),0);
                 }
                 for (Map.Entry<String, String> entry : chairmanhash.entrySet()) {
                     chairmanfile.put(entry.getKey(),entry.getValue());
-                    resultchairman.put(entry.getKey(),entry.getValue());
+                    resultchairman.put(entry.getKey(),0);
                 }
 
                 resultfile.put("secretary",resultsecretary);
