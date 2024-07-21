@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class BluetoothService {
     private static final String TAG = "BluetoothService";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private String deviceName = "";
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
@@ -42,7 +44,8 @@ public class BluetoothService {
         return instance;
     }
 
-    public boolean connect(String devive_name) {
+    public boolean connect(String device_name) {
+        deviceName = device_name;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
@@ -68,14 +71,14 @@ public class BluetoothService {
 
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         for (BluetoothDevice device : pairedDevices) {
-            if (devive_name.equals(device.getName())) {
+            if (device_name.equals(device.getName())) {
                 try {
                     bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
                     bluetoothSocket.connect();
                     outputStream = bluetoothSocket.getOutputStream();
                     inputStream = bluetoothSocket.getInputStream();
                     connected = true;
-                    Log.d(TAG, "Connected to " + devive_name);
+                    Log.d(TAG, "Connected to " + device_name);
                     return true;
                 } catch (IOException e) {
                     Log.e(TAG, "Error connecting to Bluetooth device", e);
@@ -136,16 +139,36 @@ public class BluetoothService {
     }
 
     public boolean isConnected() {
+
         if (!connected) {
             return false;
         }
 
-        try {
-            bluetoothSocket.getOutputStream().write(new byte[]{0}); // Send a dummy byte to check connection
-            return true;
-        } catch (IOException e) {
-            connected = false;
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Log.e(TAG, "Bluetooth is not enabled.");
             return false;
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "Permissions not granted");
+                return false;
+            }
+        }
+
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        for (BluetoothDevice device : pairedDevices) {
+            if (device.getName().equals(deviceName)) {
+                int connectionState = bluetoothAdapter.getProfileConnectionState(BluetoothProfile.A2DP);
+                if (connectionState == BluetoothAdapter.STATE_CONNECTED) {
+                    Log.d(TAG, "Device is connected: " + deviceName);
+                    return true;
+                }
+            }
+        }
+        Log.d(TAG, "Device is not connected: " + deviceName);
+        return false;
     }
 }

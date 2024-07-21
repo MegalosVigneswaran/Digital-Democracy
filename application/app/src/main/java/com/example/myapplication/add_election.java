@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -47,6 +48,7 @@ public class add_election extends AppCompatActivity {
     private TableLayout secta , chairta;
     private Vibrator vibrator;
     private TextView errormm;
+    private BluetoothService bluetoothService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,8 @@ public class add_election extends AppCompatActivity {
         chairmanhash = new HashMap<>();
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        bluetoothService = BluetoothService.getInstance(this);
 
         btnSelectDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +107,9 @@ public class add_election extends AppCompatActivity {
         });
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {showAddTextDialog("chairman",chairmanhash,chairta);}
+            public void onClick(View v) {
+                submitdata();
+            }
         });
     }
 
@@ -399,6 +405,17 @@ public class add_election extends AppCompatActivity {
                 headjson.put("result.json", resultfile);
 
                 String sending_data = headjson.toString();
+
+                /*if(bluetoothService.isConnected()){
+
+                    bluetoothService.send(sending_data);
+
+                }else{
+                    Intent main = new Intent(add_election.this, MainActivity.class);
+                    startActivity(main);
+                }*/
+
+                bluetoothService.send(sending_data);
 
             } catch (JSONException e) {
 

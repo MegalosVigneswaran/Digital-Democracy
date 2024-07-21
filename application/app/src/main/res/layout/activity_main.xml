@@ -3,20 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnConnect"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/bt_status"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connect EVM"
-        android:layout_centerInParent="true"
+        android:text=""
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:textColor="#EDD31919"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.5"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addelection"
@@ -27,7 +30,8 @@
         app:layout_constraintEnd_toStartOf="@id/viewresult"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintWidth_percent="0.45">
+        app:layout_constraintWidth_percent="0.45"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -52,7 +56,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/addelection"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.45">
+        app:layout_constraintWidth_percent="0.45"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
