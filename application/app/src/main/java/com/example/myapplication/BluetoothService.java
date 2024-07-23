@@ -33,6 +33,11 @@ public class BluetoothService {
 
     private static BluetoothService instance;
 
+    private Thread receiveThread;
+    private boolean stopThread;
+
+    private OnDataReceivedListener dataReceivedListener;
+
     private BluetoothService(Context context) {
         this.context = context;
     }
@@ -42,6 +47,10 @@ public class BluetoothService {
             instance = new BluetoothService(context);
         }
         return instance;
+    }
+
+    public void setOnDataReceivedListener(OnDataReceivedListener listener) {
+        this.dataReceivedListener = listener;
     }
 
     public boolean connect(String device_name) {
@@ -79,6 +88,7 @@ public class BluetoothService {
                     inputStream = bluetoothSocket.getInputStream();
                     connected = true;
                     Log.d(TAG, "Connected to " + device_name);
+                    startReceivingData();
                     return true;
                 } catch (IOException e) {
                     Log.e(TAG, "Error connecting to Bluetooth device", e);
@@ -105,24 +115,6 @@ public class BluetoothService {
         }
     }
 
-    public String receive() {
-        if (!connected) {
-            Log.e(TAG, "Bluetooth not connected");
-            return null;
-        }
-
-        try {
-            byte[] buffer = new byte[1024];
-            int bytes = inputStream.read(buffer);
-            String receivedData = new String(buffer, 0, bytes);
-            Log.d(TAG, "Data received: " + receivedData);
-            return receivedData;
-        } catch (IOException e) {
-            Log.e(TAG, "Error receiving data", e);
-            return null;
-        }
-    }
-
     public void disconnect() {
         if (!connected) {
             Log.e(TAG, "Bluetooth not connected");
@@ -130,6 +122,7 @@ public class BluetoothService {
         }
 
         try {
+            stopReceivingData();
             bluetoothSocket.close();
             connected = false;
             Log.d(TAG, "Bluetooth disconnected");
@@ -139,7 +132,6 @@ public class BluetoothService {
     }
 
     public boolean isConnected() {
-
         if (!connected) {
             return false;
         }
@@ -171,4 +163,46 @@ public class BluetoothService {
         Log.d(TAG, "Device is not connected: " + deviceName);
         return false;
     }
+
+    private void startReceivingData() {
+        stopThread = false;
+        receiveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] buffer = new byte[1024];
+                int bytes;
+                while (!stopThread) {
+                    try {
+                        if (inputStream != null && inputStream.available() > 0) {
+                            bytes = inputStream.read(buffer);
+                            final String receivedData = new String(buffer, 0, bytes);
+                            Log.d(TAG, "Data received: " + receivedData);
+
+                            // Notify the listener
+                            if (dataReceivedListener != null) {
+                                dataReceivedListener.onDataReceived(receivedData);
+                            }
+                        }
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error receiving data", e);
+                        stopThread = true;
+                    }
+                }
+            }
+        });
+        receiveThread.start();
+    }
+
+    private void stopReceivingData() {
+        stopThread = true;
+        if (receiveThread != null) {
+            receiveThread.interrupt();
+            receiveThread = null;
+        }
+    }
+
+    public interface OnDataReceivedListener {
+        void onDataReceived(String data);
+    }
+
 }
