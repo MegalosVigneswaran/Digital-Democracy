@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     private ConstraintLayout addelection, getresult;
-    private TextView bt_status,cred;
+    private TextView bt_status, cred;
     private BluetoothService bluetoothService;
     private Handler handler = new Handler();
     private static final String DEVICE_NAME = "q1w2e3r4";
@@ -50,27 +50,19 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions();
         }
 
-        addelection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, add_election.class);
-                startActivity(myIntent);
-            }
-        });
-        getresult.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, ViewResult.class);
-                startActivity(myIntent);
-            }
+        addelection.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, add_election.class);
+            startActivity(myIntent);
         });
 
-        cred.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, projectinfo.class);
-                startActivity(myIntent);
-            }
+        getresult.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, ViewResult.class);
+            startActivity(myIntent);
+        });
+
+        cred.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, projectinfo.class);
+            startActivity(myIntent);
         });
     }
 
@@ -97,31 +89,28 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 connectBluetooth();
             } else {
-                ShowButton(false);
+                showButton(false);
             }
         }
     }
 
     private void connectBluetooth() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!bluetoothService.isConnected()) {
-                    if (bluetoothService.connect(DEVICE_NAME)) {
-                        ShowButton(true);
-                    } else {
-                        ShowButton(false);
-                        connectBluetooth();
-                    }
+        handler.postDelayed(() -> {
+            if (!bluetoothService.isConnected()) {
+                if (bluetoothService.connect(DEVICE_NAME)) {
+                    showButton(true);
                 } else {
-                    ShowButton(true);
+                    showButton(false);
+                    connectBluetooth();
                 }
+            } else {
+                showButton(true);
             }
         }, 1250);
     }
 
-    private void ShowButton(boolean show_button) {
-        if (show_button) {
+    private void showButton(boolean showButton) {
+        if (showButton) {
             addelection.setVisibility(View.VISIBLE);
             getresult.setVisibility(View.VISIBLE);
             bt_status.setVisibility(View.INVISIBLE);
