@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView bt_status,cred;
     private BluetoothService bluetoothService;
     private Handler handler = new Handler();
-    private static final String DEVICE_NAME = "ESP32_BT";
+    private static final String DEVICE_NAME = "q1w2e3r4";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
