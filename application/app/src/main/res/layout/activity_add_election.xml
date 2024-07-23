@@ -21,6 +21,7 @@
 
 
     <ScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -212,6 +213,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="25dp"
                 android:text="Submit"
                 android:textSize="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -221,4 +223,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

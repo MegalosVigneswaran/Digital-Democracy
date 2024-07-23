@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     private ConstraintLayout addelection, getresult;
-    private TextView bt_status;
+    private TextView bt_status,cred;
     private BluetoothService bluetoothService;
     private Handler handler = new Handler();
     private static final String DEVICE_NAME = "ESP32_BT";
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         bt_status = findViewById(R.id.bt_status);
         addelection = findViewById(R.id.addelection);
         getresult = findViewById(R.id.viewresult);
+        cred = findViewById(R.id.cred);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -60,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(MainActivity.this, ViewResult.class);
+                startActivity(myIntent);
+            }
+        });
+
+        cred.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, projectinfo.class);
                 startActivity(myIntent);
             }
         });
